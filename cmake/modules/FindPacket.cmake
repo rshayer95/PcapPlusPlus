@@ -1,4 +1,4 @@
-# ~~~
+#
 # Copyright (C) 2017 Ali Abdulkadir <autostart.ini@gmail.com>.
 #
 # Permission is hereby granted, free of charge, to any person
@@ -34,49 +34,53 @@
 #                          link with. An absolute path is will be used if the
 #                          Packet library is not located in the compiler's
 #                          default search path.
-#
+
 # Packet_FOUND           - TRUE if the Packet library *and* header are found.
 #
 # Hints and Backward Compatibility
 # ================================
 #
-# To tell this module where to look, a user may set the environment variable Packet_ROOT to point cmake to the *root* of
-# a directory with include and lib subdirectories for packet.dll (e.g WpdPack or npcap-sdk). Alternatively, Packet_ROOT
-# may also be set from cmake command line or GUI (e.g cmake -DPacket_ROOT=C:\path\to\packet [...])
-# ~~~
+# To tell this module where to look, a user may set the environment variable
+# Packet_ROOT to point cmake to the *root* of a directory with include and
+# lib subdirectories for packet.dll (e.g WpdPack or npcap-sdk).
+# Alternatively, Packet_ROOT may also be set from cmake command line or GUI
+# (e.g cmake -DPacket_ROOT=C:\path\to\packet [...])
+#
 
-# The 64-bit Packet.lib is located under /x64
-if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+if(CMAKE_GENERATOR_PLATFORM STREQUAL "Win32")
   #
-  # For the WinPcap and Npcap SDKs, the Lib subdirectory of the top-level directory contains 32-bit libraries; the
-  # 64-bit libraries are in the Lib/x64 directory.
+  # 32-bit x86; no need to look in subdirectories of the SDK's
+  # Lib directory for the libraries, as the libraries are in
+  # the Lib directory
   #
-  # The only way to *FORCE* CMake to look in the Lib/x64 directory without searching in the Lib directory first appears
-  # to be to set CMAKE_LIBRARY_ARCHITECTURE to "x64".
+else()
   #
-  set(CMAKE_LIBRARY_ARCHITECTURE "x64")
+  # Platform other than 32-bit x86.
+  #
+  # For the WinPcap and Npcap SDKs, the Lib subdirectory of the top-level
+  # directory contains 32-bit x86 libraries; the libraries for other
+  # platforms are in subdirectories of the Lib directory whose names
+  # are the names of the supported platforms.
+  #
+  # The only way to *FORCE* CMake to look in the appropriate
+  # subdirectory of Lib for libraries without searching in the
+  # Lib directory first appears to be to set
+  # CMAKE_LIBRARY_ARCHITECTURE to the name of the subdirectory.
+  #
+  set(CMAKE_LIBRARY_ARCHITECTURE "${CMAKE_GENERATOR_PLATFORM}")
 endif()
 
 # Find the header
 find_path(Packet_INCLUDE_DIR Packet32.h PATH_SUFFIXES include Include)
 
 # Find the library
-find_library(Packet_LIBRARY NAMES Packet packet NAMES_PER_DIR)
+find_library(Packet_LIBRARY NAMES Packet packet)
 
 # Set Packet_FOUND to TRUE if Packet_INCLUDE_DIR and Packet_LIBRARY are TRUE.
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(Packet DEFAULT_MSG Packet_LIBRARY Packet_INCLUDE_DIR)
-
-# create IMPORTED target for libpcap dependency
-if(NOT TARGET Packet::Packet)
-  add_library(Packet::Packet IMPORTED SHARED)
-  set_target_properties(
-    Packet::Packet
-    PROPERTIES
-      IMPORTED_LOCATION ${Packet_LIBRARY}
-      IMPORTED_IMPLIB ${Packet_LIBRARY}
-      INTERFACE_INCLUDE_DIRECTORIES ${Packet_INCLUDE_DIR}
-  )
-endif()
+find_package_handle_standard_args(Packet DEFAULT_MSG Packet_INCLUDE_DIR Packet_LIBRARY)
 
 mark_as_advanced(Packet_INCLUDE_DIR Packet_LIBRARY)
+
+set(Packet_INCLUDE_DIRS ${Packet_INCLUDE_DIR})
+set(Packet_LIBRARIES ${Packet_LIBRARY})
