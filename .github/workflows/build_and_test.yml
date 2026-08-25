@@ -804,6 +804,9 @@ jobs:
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
+          # Use x64 Python (runs under emulation) since some pip dependencies (e.g. cryptography)
+          # don't publish win_arm64 wheels, which would otherwise force a from-source build.
+          architecture: "x64"
 
       - name: Add MSBuild to PATH
         uses: microsoft/setup-msbuild@30375c66a4eea26614e0d39710365f22f8b0af57 # v3.0.0
@@ -838,16 +841,6 @@ jobs:
           cd Tests\ExamplesTest
           python -m pip install -r requirements.txt
           python -m pytest --root-path=../../Dist/examples_bin
-
-      - name: Upload Coverage Results
-        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
-        with:
-          files: ./Dist/Tests/Pcap++Test/Debug/Pcap++Coverage.xml,./Dist/Tests/Packet++Test/Debug/Packet++Coverage.xml
-          flags: ${{ matrix.os }},unittest,npcap
-          fail_ci_if_error: false
-          verbose: true
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   #windivert:
   #  runs-on: windows-latest
