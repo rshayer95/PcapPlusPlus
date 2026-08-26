@@ -33,7 +33,7 @@
 
 find_path(PCAP_INCLUDE_DIR NAMES pcap/pcap.h pcap.h PATH_SUFFIXES include Include)
 
-if(CMAKE_GENERATOR_PLATFORM STREQUAL "Win32" OR CMAKE_SIZEOF_VOID_P EQUAL 8)
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
   #
   # 32-bit x86; no need to look in subdirectories of the SDK's
   # Lib directory for the libraries, as the libraries are in
