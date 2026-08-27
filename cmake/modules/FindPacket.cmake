@@ -47,27 +47,30 @@
 # (e.g cmake -DPacket_ROOT=C:\path\to\packet [...])
 #
 
-if(CMAKE_SIZEOF_VOID_P EQUAL 4)
-  #
-  # 32-bit x86; no need to look in subdirectories of the SDK's
-  # Lib directory for the libraries, as the libraries are in
-  # the Lib directory
-  #
-else()
-  #
-  # Platform other than 32-bit x86.
-  #
-  # For the WinPcap and Npcap SDKs, the Lib subdirectory of the top-level
-  # directory contains 32-bit x86 libraries; the libraries for other
-  # platforms are in subdirectories of the Lib directory whose names
-  # are the names of the supported platforms.
-  #
-  # The only way to *FORCE* CMake to look in the appropriate
-  # subdirectory of Lib for libraries without searching in the
-  # Lib directory first appears to be to set
-  # CMAKE_LIBRARY_ARCHITECTURE to the name of the subdirectory.
-  #
-  set(CMAKE_LIBRARY_ARCHITECTURE "${CMAKE_GENERATOR_PLATFORM}")
+# This logic only applies to the WinPcap/Npcap SDK's Lib directory layout.
+if(WIN32)
+  if(CMAKE_SIZEOF_VOID_P EQUAL 4)
+    #
+    # 32-bit x86; no need to look in subdirectories of the SDK's
+    # Lib directory for the libraries, as the libraries are in
+    # the Lib directory
+    #
+  else()
+    #
+    # Platform other than 32-bit x86.
+    #
+    # For the WinPcap and Npcap SDKs, the Lib subdirectory of the top-level
+    # directory contains 32-bit x86 libraries; the libraries for other
+    # platforms are in subdirectories of the Lib directory whose names
+    # are the names of the supported platforms.
+    #
+    # The only way to *FORCE* CMake to look in the appropriate
+    # subdirectory of Lib for libraries without searching in the
+    # Lib directory first appears to be to set
+    # CMAKE_LIBRARY_ARCHITECTURE to the name of the subdirectory.
+    #
+    set(CMAKE_LIBRARY_ARCHITECTURE "${CMAKE_GENERATOR_PLATFORM}")
+  endif()
 endif()
 
 # Find the header
