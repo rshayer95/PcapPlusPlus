@@ -69,7 +69,14 @@ if(WIN32)
     # Lib directory first appears to be to set
     # CMAKE_LIBRARY_ARCHITECTURE to the name of the subdirectory.
     #
-    set(CMAKE_LIBRARY_ARCHITECTURE "${CMAKE_GENERATOR_PLATFORM}")
+    if(CMAKE_GENERATOR_PLATFORM)
+      set(CMAKE_LIBRARY_ARCHITECTURE "${CMAKE_GENERATOR_PLATFORM}")
+    elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(aarch64|arm64|ARM64)$")
+      # Single-config generators like "MinGW Makefiles" don't set CMAKE_GENERATOR_PLATFORM
+      set(CMAKE_LIBRARY_ARCHITECTURE "ARM64")
+    else()
+      set(CMAKE_LIBRARY_ARCHITECTURE "x64")
+    endif()
   endif()
 endif()
 
