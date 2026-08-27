@@ -47,7 +47,7 @@
 # (e.g cmake -DPacket_ROOT=C:\path\to\packet [...])
 #
 
-if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+if(CMAKE_SIZEOF_VOID_P EQUAL 4)
   #
   # 32-bit x86; no need to look in subdirectories of the SDK's
   # Lib directory for the libraries, as the libraries are in
